@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería</title>
+    <style>
+        /* Estilos generales y fondo similar a la imagen */
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f6f8fb 0%, #edf1f5 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Título central */
+        h1 {
+            color: #0f172a;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        /* Contenedor principal de la cuadrícula */
+        .galeria {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 900px;
+        }
+
+        /* Estilo de cada tarjeta blanca */
+        .tarjeta {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 12px;
+            width: 220px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Contenedor de la imagen dentro de la tarjeta */
+        .imagen-contenedor {
+            width: 100%;
+            height: 180px;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .imagen-contenedor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Texto inferior de la tarjeta */
+        .titulo {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #334155;
+            padding: 0 10px 10px 10px;
+            text-transform: lowercase; /* Para igualar el estilo "sarah bernhardt..." de tu captura */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Galeria</h1>
+    
+    <div class="galeria" id="contenedor-galeria">
+        <!-- Las tarjetas se inyectarán aquí mediante JavaScript -->
+    </div>
+
+    <script>
+        // Función para consumir el backend y pintar el HTML
+        async function cargarGaleria() {
+            const contenedor = document.getElementById('contenedor-galeria');
+            
+            try {
+                // Llamada a tu backend local
+                const respuesta = await fetch('http://localhost:3001/api/fotos');
+                const fotos = await respuesta.json();
+                
+                // Recorrer el array de fotos e inyectar el HTML
+                fotos.forEach(foto => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'tarjeta';
+                    
+                    // Se usa picsum.photos con el ID para generar una imagen distinta por plato
+                    tarjeta.innerHTML = `
+                        <div class="imagen-contenedor">
+                            <img src="https://picsum.photos/seed/${foto.id}/250/250" alt="${foto.nombre}">
+                        </div>
+                        <div class="titulo">${foto.nombre}</div>
+                    `;
+                    
+                    contenedor.appendChild(tarjeta);
+                });
+            } catch (error) {
+                console.error('Error conectando con el backend:', error);
+                contenedor.innerHTML = '<p style="color: red;">Error al cargar los datos. ¿Está el backend corriendo en el puerto 3001?</p>';
+            }
+        }
+
+        // Ejecutar la función al cargar la página
+        cargarGaleria();
+    </script>
+</body>
+</html>
